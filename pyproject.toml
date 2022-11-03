@@ -1,0 +1,38 @@
+[project]
+name = "daskberg"
+description = "icy"
+readme = "README.md"
+license = {file="LICENCE"}
+requires-python = ">=3.8"
+authors = [
+    { name = "Martin Durant", email = "mdurant@anaconda.com" },
+]
+maintainers = [
+    { name = "Martin Durant", email = "mdurant@anaconda.com" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "fastavro",
+    "dask",
+    "fsspec",
+    "numpy",
+    "fastparquet",
+    "mmh3"
+]
+version = "0.0.1"
+
+[build-system]
+requires = [
+  "setuptools >= 40.9.0",
+  "wheel",
+]
+build-backend = "setuptools.build_meta"
