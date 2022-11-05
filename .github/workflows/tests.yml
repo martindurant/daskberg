@@ -15,7 +15,7 @@ jobs:
           auto-update-conda: true
           auto-activate-base: false
           activate-environment: test_env
-          environment-file: ci/environment39.yml
+          environment-file: ci/environment39.yaml
       - name: Install
         shell: bash -l {0}
         run: |
