@@ -152,6 +152,7 @@ class IcebergDataset:
                 for _ in self.metadata["partition-specs"]
                 if _["spec-id"] == mani["partition_spec_id"]
             ]
+            part_spec
             # zip(mani["partitions"], part_spec)
             # perform filtering to skip manifest
             path = mani["manifest_path"].replace(self.original_url, self.url)
