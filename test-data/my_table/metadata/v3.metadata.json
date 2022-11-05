@@ -1,0 +1,117 @@
+{
+  "format-version" : 1,
+  "table-uuid" : "910c3f60-d2ff-4d4c-9800-7f78da516fc6",
+  "location" : "/Users/mdurant/temp/warehouse/db/my_table",
+  "last-updated-ms" : 1667354340939,
+  "last-column-id" : 2,
+  "schema" : {
+    "type" : "struct",
+    "schema-id" : 0,
+    "fields" : [ {
+      "id" : 1,
+      "name" : "name",
+      "required" : false,
+      "type" : "string"
+    }, {
+      "id" : 2,
+      "name" : "age",
+      "required" : false,
+      "type" : "int"
+    } ]
+  },
+  "current-schema-id" : 0,
+  "schemas" : [ {
+    "type" : "struct",
+    "schema-id" : 0,
+    "fields" : [ {
+      "id" : 1,
+      "name" : "name",
+      "required" : false,
+      "type" : "string"
+    }, {
+      "id" : 2,
+      "name" : "age",
+      "required" : false,
+      "type" : "int"
+    } ]
+  } ],
+  "partition-spec" : [ ],
+  "default-spec-id" : 0,
+  "partition-specs" : [ {
+    "spec-id" : 0,
+    "fields" : [ ]
+  } ],
+  "last-partition-id" : 999,
+  "default-sort-order-id" : 0,
+  "sort-orders" : [ {
+    "order-id" : 0,
+    "fields" : [ ]
+  } ],
+  "properties" : {
+    "owner" : "mdurant"
+  },
+  "current-snapshot-id" : 1311955902847697544,
+  "refs" : {
+    "main" : {
+      "snapshot-id" : 1311955902847697544,
+      "type" : "branch"
+    }
+  },
+  "snapshots" : [ {
+    "snapshot-id" : 2945427400371479360,
+    "timestamp-ms" : 1667354301148,
+    "summary" : {
+      "operation" : "append",
+      "spark.app.id" : "local-1667354246679",
+      "added-data-files" : "4",
+      "added-records" : "4",
+      "added-files-size" : "2586",
+      "changed-partition-count" : "1",
+      "total-records" : "4",
+      "total-files-size" : "2586",
+      "total-data-files" : "4",
+      "total-delete-files" : "0",
+      "total-position-deletes" : "0",
+      "total-equality-deletes" : "0"
+    },
+    "manifest-list" : "/Users/mdurant/temp/warehouse/db/my_table/metadata/snap-2945427400371479360-1-7030cfec-e03f-40a2-a850-16cffd89d9ac.avro",
+    "schema-id" : 0
+  }, {
+    "snapshot-id" : 1311955902847697544,
+    "parent-snapshot-id" : 2945427400371479360,
+    "timestamp-ms" : 1667354340939,
+    "summary" : {
+      "operation" : "overwrite",
+      "spark.app.id" : "local-1667354246679",
+      "added-data-files" : "1",
+      "deleted-data-files" : "1",
+      "added-records" : "1",
+      "deleted-records" : "1",
+      "added-files-size" : "656",
+      "removed-files-size" : "650",
+      "changed-partition-count" : "1",
+      "total-records" : "4",
+      "total-files-size" : "2592",
+      "total-data-files" : "4",
+      "total-delete-files" : "0",
+      "total-position-deletes" : "0",
+      "total-equality-deletes" : "0"
+    },
+    "manifest-list" : "/Users/mdurant/temp/warehouse/db/my_table/metadata/snap-1311955902847697544-1-844a1c71-3878-41ff-a1dc-677fcf770276.avro",
+    "schema-id" : 0
+  } ],
+  "snapshot-log" : [ {
+    "timestamp-ms" : 1667354301148,
+    "snapshot-id" : 2945427400371479360
+  }, {
+    "timestamp-ms" : 1667354340939,
+    "snapshot-id" : 1311955902847697544
+  } ],
+  "metadata-log" : [ {
+    "timestamp-ms" : 1667354254677,
+    "metadata-file" : "/Users/mdurant/temp/warehouse/db/my_table/metadata/v1.metadata.json"
+  }, {
+    "timestamp-ms" : 1667354301148,
+    "metadata-file" : "/Users/mdurant/temp/warehouse/db/my_table/metadata/v2.metadata.json"
+  } ]
+}
