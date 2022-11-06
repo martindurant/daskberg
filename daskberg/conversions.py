@@ -46,6 +46,18 @@ def typemap(typestr):
     raise NotImplementedError
 
 
+def tr_typemap(trans, tr_fields):
+    """Get the type of a transform output, to match against manifest bounds"""
+    tr = trans["transform"]
+    if tr.startswith("bucket"):
+        return "int"
+    if tr == "identity" or tr.startswith("truncate"):
+        return tr_fields[trans["source-id"]]["type"]
+    if tr == "void":
+        return None
+    raise NotImplementedError
+
+
 def transform(val, trans):
     """Implement partition transforms"""
     if isinstance(val, list):

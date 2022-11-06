@@ -5,7 +5,7 @@ import dask.dataframe as dd
 import fastavro
 import fsspec.core
 
-from daskberg.conversions import convert, transform, typemap
+from daskberg.conversions import convert, tr_typemap, transform, typemap
 
 
 class ManifestStatus(enum.IntEnum):
@@ -143,19 +143,25 @@ class IcebergDataset:
         ][0]
 
     def _scan_manifest(self, filters=None):
-        # TODO: should be cached for the snapshot/filters pair
         allfiles = {}
         deletefiles = set()
         for mani in self.manifest_list:
+            path = mani["manifest_path"].replace(self.original_url, self.url)
+
+            # manifest filtering -skips load of unneeded file or looping
+            # over contents if already cached
             part_spec = [
                 _["fields"]
                 for _ in self.metadata["partition-specs"]
                 if _["spec-id"] == mani["partition_spec_id"]
-            ]
-            part_spec
-            # zip(mani["partitions"], part_spec)
-            # perform filtering to skip manifest
-            path = mani["manifest_path"].replace(self.original_url, self.url)
+            ][0]
+            combined = list(zip(mani["partitions"], part_spec))
+            filter_result = apply_filters(combined, filters, self._fields)
+            if len(filter_result) < len(combined):
+                continue
+
+            # loads mani files
+            # TODO: do concurrently
             if path not in self.manifest_cache:
                 with fsspec.open(path, "rb", **self.storage_options) as f:
                     self.manifest_cache[path] = list(fastavro.reader(f))
@@ -176,6 +182,20 @@ class IcebergDataset:
             allfiles.pop(afile, None)
         self._allfiles = allfiles
 
+    @property
+    def _fields(self):
+        fields = {}
+        for field in self.schema:
+            fields[field["name"]] = {"id": field["id"], "type": field["type"]}
+            part_trans = [
+                _
+                for _ in self.metadata["partition-spec"]
+                if _["source-id"] == field["id"] and _["transform"] != "identity"
+            ]
+            if part_trans:
+                fields[field["name"]]["transform"] = part_trans[0]
+        return fields
+
     def read(self, filters=None, columns=None, **kwargs):
         """The current snapshot as a dask array
 
@@ -192,17 +212,7 @@ class IcebergDataset:
             self.open_snapshot()
         self._scan_manifest(filters)
         if filters:
-            fields = {}
-            for field in self.schema:
-                fields[field["name"]] = {"id": field["id"], "type": field["type"]}
-                part_trans = [
-                    _
-                    for _ in self.metadata["partition-spec"]
-                    if _["source-id"] == field["id"] and _["transform"] != "identity"
-                ]
-                if part_trans:
-                    fields[field["name"]]["transform"] = part_trans[0]
-            parts = apply_filters(self._allfiles.values(), filters, fields)
+            parts = apply_filters(self._allfiles.values(), filters, self._fields)
             parts = [_["file_path"].replace(self.original_url, self.url) for _ in parts]
             if len(parts) == 0:
                 raise ValueError("No partitions pass filter(s)")
@@ -244,6 +254,7 @@ class IcebergDataset:
 # adapted from dask.dataframe.io.parquet.core
 def apply_filters(file_details, filters, fields):
     """Selects files passing given filters"""
+    tr_fields = {_["id"]: _ for _ in fields.values()}
 
     def apply_conjunction(file_details, conjunction):
         for column, operator, value in conjunction:
@@ -252,14 +263,30 @@ def apply_filters(file_details, filters, fields):
             out_parts = []
             if "transform" in fields[column]:
                 tr_tr = fields[column]["transform"]["transform"]
+                # TODO: if transform is NULL (value->None), can we just
+                #  skip with continue?
                 value = transform(value, tr_tr)
                 column = fields[column]["transform"]["name"]
 
             for file_detail in file_details:
                 # file details is either a manifest or a single data file
-                if column in file_detail["partition"]:
+                if isinstance(file_detail, tuple):
+                    # manifest bounds
+                    stats, part = file_detail
+                    tr_type = tr_typemap(part, tr_fields)
+                    if part["name"] == column:
+                        min = stats["lower_bound"]
+                        min = convert(min, tr_type)
+                        max = stats["upper_bound"]
+                        max = convert(max, tr_type)
+                    else:
+                        out_parts.append(1)
+                        continue
+                elif column in file_detail["partition"]:
+                    # data file partitions
                     min = max = file_detail["partition"][column]
                 else:
+                    # data file bounds
                     min = [
                         _["value"]
                         for _ in file_detail["lower_bounds"]
