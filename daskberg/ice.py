@@ -163,9 +163,10 @@ class IcebergDataset:
                 if _["spec-id"] == mani["partition_spec_id"]
             ][0]
             combined = list(zip(mani["partitions"], part_spec))
-            filter_result = apply_filters(combined, filters, self._fields)
-            if len(filter_result) < len(combined):
-                continue
+            if filters:
+                filter_result = apply_filters(combined, filters, self._fields)
+                if len(filter_result) < len(combined):
+                    continue
 
             # loads mani files
             # TODO: do concurrently
