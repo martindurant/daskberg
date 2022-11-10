@@ -16,7 +16,8 @@ class ManifestStatus(enum.IntEnum):
 
 class IcebergDataset:
     def __init__(
-        self, url, original_url=None, storage_options=None, engine="fastparquet"
+        self, url, original_url=None, storage_options=None, engine="fastparquet",
+            version=None
     ):
         """
         Parameters
@@ -39,7 +40,7 @@ class IcebergDataset:
         self._current_snapshot = None
         self.manifest_cache = {}
         self.manifest_list = None
-        self.set_version()
+        self.set_version(version)
 
     @property
     def version_hint(self):
@@ -64,12 +65,18 @@ class IcebergDataset:
     def version(self, version: int):
         self.set_version(version)
 
-    def set_version(self, version=None):
-        """Travel to the given version"""
+    def set_version(self, version=None, meta=None):
+        """Travel to the given version
+
+        If version is None, will read version from version-hint.text
+        """
         if version is None:
             version = self.version_hint
-        with self.fs.open(f"{self.url}/metadata/v{version}.metadata.json", "rt") as f:
-            self._metadata = json.load(f)
+        if meta is None:
+            with self.fs.open(f"{self.url}/metadata/v{version}.metadata.json", "rt") as f:
+                self._metadata = json.load(f)
+        else:
+            self._metadata = meta
         self._version = version
 
     @property
