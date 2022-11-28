@@ -9,13 +9,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v2
+
+      - name: Setup conda
+        uses: mamba-org/provision-with-micromamba@main
         with:
-          auto-update-conda: true
-          auto-activate-base: false
-          activate-environment: test_env
-          environment-file: ci/environment39.yaml
+          environment-file: ci/environment-win.yml
+
       - name: Install
         shell: bash -l {0}
         run: |
