@@ -1,5 +1,6 @@
 import enum
 import json
+import os.path
 
 import dask.dataframe as dd
 import fastavro
@@ -51,7 +52,7 @@ class IcebergDataset:
         try:
             with self.fs.open(self.url + "/metadata/" + "version-hint.text", "rb") as f:
                 return int(f.read())
-        except (FileNotFoundError, ValueError):
+        except (OSError, ValueError):
             return 0
 
     @property
@@ -73,8 +74,13 @@ class IcebergDataset:
         if version is None:
             version = self.version_hint
         if meta is None:
-            with self.fs.open(f"{self.url}/metadata/v{version}.metadata.json", "rt") as f:
-                self._metadata = json.load(f)
+            if self.url.endswith(".json"):
+                with self.fs.open(self.url, "rt") as f:
+                    self._metadata = json.load(f)
+                self.url = os.path.dirname(os.path.dirname(self.url))
+            else:
+                with self.fs.open(f"{self.url}/metadata/v{version}.metadata.json", "rt") as f:
+                    self._metadata = json.load(f)
         else:
             self._metadata = meta
         self._version = version

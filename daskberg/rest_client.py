@@ -1,10 +1,8 @@
 import requests
-example_schema = [{'id': 1, 'name': 'date', 'required': False, 'type': 'date'},
- {'id': 2, 'name': 'symbol', 'required': False, 'type': 'string'}]
 
 
 class IceRESTClient:
-
+    # https://github.com/apache/iceberg/blob/master/open-api/rest-catalog-open-api.yaml
     def __init__(self, endpoint):
         self.endpoint = endpoint
         self.namespace = None
@@ -14,7 +12,8 @@ class IceRESTClient:
         return f"{self.endpoint}{path}"
 
     def list_namespaces(self):
-        return self.session.get(self.url("/v1/namespaces")).json()["namespaces"]
+        return [_[0] for _ in
+                self.session.get(self.url("/v1/namespaces")).json()["namespaces"]]
 
     def get_namespace(self, namespace):
         return self.session.get(self.url(f"/v1/namespaces/{namespace}")).json()["properties"]
@@ -24,9 +23,15 @@ class IceRESTClient:
             self.url(f"/v1/namespaces"), json={"namespace": [namespace]}
         ).json()
 
-    def list_tables(self, namespace=None):
+    def delete_namespace(self, namespace):
+        return self.session.delete(
+            self.url(f"/v1/namespaces/{namespace}")
+        ).ok
+
+    def list_tables(self, namespace=None, detail=True):
         namespace = namespace or self.namespace
-        return self.session.get(self.url(f"/v1/namespaces/{namespace}/tables")).json()["identifiers"]
+        out = self.session.get(self.url(f"/v1/namespaces/{namespace}/tables")).json()
+        return [_["name"] for _ in out["identifiers"]]
 
     def create_table(self, name, schema, namespace=None, stage=False):
         """
@@ -66,6 +71,10 @@ class IceRESTClient:
         data = {"purgeRequested": purge}
         return self.session.delete(self.url(f"/v1/namespaces/{namespace}/tables/{name}"),
                                    json=data).json()
+
+###
+# Utility functions to examine published API
+###
 
 
 def _get_api():

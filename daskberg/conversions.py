@@ -78,7 +78,7 @@ def transform(val, trans):
     if trans == "day":
         if val.dtype == "M8[ms]":
             return val.view("int64") // DAYS_TO_MILLIS
-        if val.dtype == "m8[ns]":
+        if val.dtype == "M8[ns]":
             return val.view("int64") // DAYS_TO_MILLIS // 1000000
 
     raise NotImplementedError(
