@@ -8,3 +8,4 @@ dependencies:
   - fastparquet
   - fsspec
   - pytest-cov
+  - requests

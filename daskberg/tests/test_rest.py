@@ -7,8 +7,9 @@ import time
 import pytest
 import requests
 
-from daskberg.rest_client import IceRESTClient
 from daskberg.ice import IcebergDataset
+from daskberg.rest_client import IceRESTClient
+
 loc = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
@@ -22,7 +23,9 @@ def stop_docker(name):
 @pytest.fixture()
 def client():
     try:
-        subprocess.check_call(["docker", "run", "hello-world"], stdout=subprocess.DEVNULL)
+        subprocess.check_call(
+            ["docker", "run", "hello-world"], stdout=subprocess.DEVNULL
+        )
     except (subprocess.CalledProcessError, FileNotFoundError):
         pytest.skip("docker run not available")
         return
@@ -39,7 +42,7 @@ def client():
             requests.get("http://localhost:8181")
             yield IceRESTClient("http://localhost:8181")
             break
-        except:
+        except Exception:
             time.sleep(0.5)
             timeout -= 0.5
             if timeout < 0:
@@ -59,8 +62,10 @@ def test_namespaces(client):
 
 
 def test_table(client: IceRESTClient):
-    example_schema = [{'id': 1, 'name': 'date', 'required': False, 'type': 'date'},
-                      {'id': 2, 'name': 'symbol', 'required': False, 'type': 'string'}]
+    example_schema = [
+        {"id": 1, "name": "date", "required": False, "type": "date"},
+        {"id": 2, "name": "symbol", "required": False, "type": "string"},
+    ]
     client.create_namespace("fred")
     client.namespace = "fred"
     assert client.list_tables() == []
@@ -69,8 +74,8 @@ def test_table(client: IceRESTClient):
     out = client.get_table("test")
     assert out["metadata"]["schema"]["fields"] == example_schema
     berg = IcebergDataset(
-        out["metadata-location"].replace('/tmp', loc + "/rest"),
-        original_url=out["metadata-location"]
+        out["metadata-location"].replace("/tmp", loc + "/rest"),
+        original_url=out["metadata-location"],
     )
     assert os.path.isdir(berg.url)
     with pytest.raises(ValueError):

@@ -17,8 +17,12 @@ class ManifestStatus(enum.IntEnum):
 
 class IcebergDataset:
     def __init__(
-        self, url, original_url=None, storage_options=None, engine="fastparquet",
-            version=None
+        self,
+        url,
+        original_url=None,
+        storage_options=None,
+        engine="fastparquet",
+        version=None,
     ):
         """
         Parameters
@@ -79,7 +83,9 @@ class IcebergDataset:
                     self._metadata = json.load(f)
                 self.url = os.path.dirname(os.path.dirname(self.url))
             else:
-                with self.fs.open(f"{self.url}/metadata/v{version}.metadata.json", "rt") as f:
+                with self.fs.open(
+                    f"{self.url}/metadata/v{version}.metadata.json", "rt"
+                ) as f:
                     self._metadata = json.load(f)
         else:
             self._metadata = meta

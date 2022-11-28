@@ -12,21 +12,23 @@ class IceRESTClient:
         return f"{self.endpoint}{path}"
 
     def list_namespaces(self):
-        return [_[0] for _ in
-                self.session.get(self.url("/v1/namespaces")).json()["namespaces"]]
+        return [
+            _[0]
+            for _ in self.session.get(self.url("/v1/namespaces")).json()["namespaces"]
+        ]
 
     def get_namespace(self, namespace):
-        return self.session.get(self.url(f"/v1/namespaces/{namespace}")).json()["properties"]
+        return self.session.get(self.url(f"/v1/namespaces/{namespace}")).json()[
+            "properties"
+        ]
 
     def create_namespace(self, namespace):
         return self.session.post(
-            self.url(f"/v1/namespaces"), json={"namespace": [namespace]}
+            self.url("/v1/namespaces"), json={"namespace": [namespace]}
         ).json()
 
     def delete_namespace(self, namespace):
-        return self.session.delete(
-            self.url(f"/v1/namespaces/{namespace}")
-        ).ok
+        return self.session.delete(self.url(f"/v1/namespaces/{namespace}")).ok
 
     def list_tables(self, namespace=None, detail=True):
         namespace = namespace or self.namespace
@@ -47,8 +49,10 @@ class IceRESTClient:
         :return:
         """
         if isinstance(schema, dict):
-            schema = [{"id": i, "name": k, "type": v, "required": False}
-                      for i, (k, v) in enumerate(schema.items())]
+            schema = [
+                {"id": i, "name": k, "type": v, "required": False}
+                for i, (k, v) in enumerate(schema.items())
+            ]
         namespace = namespace or self.namespace
         data = {
             "name": name,
@@ -56,21 +60,27 @@ class IceRESTClient:
                 "type": "struct",
                 "schema-id": 0,
                 "identifier-field-ids": [],
-                "fields": schema
+                "fields": schema,
             },
-            "stage-create": stage
+            "stage-create": stage,
         }
-        return self.session.post(self.url(f"/v1/namespaces/{namespace}/tables"), json=data).json()
+        return self.session.post(
+            self.url(f"/v1/namespaces/{namespace}/tables"), json=data
+        ).json()
 
     def get_table(self, name, namespace=None):
         namespace = namespace or self.namespace
-        return self.session.get(self.url(f"/v1/namespaces/{namespace}/tables/{name}")).json()
+        return self.session.get(
+            self.url(f"/v1/namespaces/{namespace}/tables/{name}")
+        ).json()
 
     def delete_table(self, name, namespace=None, purge=True):
         namespace = namespace or self.namespace
         data = {"purgeRequested": purge}
-        return self.session.delete(self.url(f"/v1/namespaces/{namespace}/tables/{name}"),
-                                   json=data).json()
+        return self.session.delete(
+            self.url(f"/v1/namespaces/{namespace}/tables/{name}"), json=data
+        ).json()
+
 
 ###
 # Utility functions to examine published API
@@ -78,10 +88,13 @@ class IceRESTClient:
 
 
 def _get_api():
-    import yaml
     import fsspec
-    with fsspec.open("https://github.com/apache/iceberg/raw/master/"
-                     "open-api/rest-catalog-open-api.yaml") as f:
+    import yaml
+
+    with fsspec.open(
+        "https://github.com/apache/iceberg/raw/master/"
+        "open-api/rest-catalog-open-api.yaml"
+    ) as f:
         return yaml.safe_load(f.read())
 
 
