@@ -13,7 +13,7 @@ jobs:
       - name: Setup conda
         uses: mamba-org/provision-with-micromamba@main
         with:
-          environment-file: ci/environment-win.yml
+          environment-file: ci/environment39.yml
 
       - name: Install
         shell: bash -l {0}
