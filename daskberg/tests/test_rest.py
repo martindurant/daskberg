@@ -43,6 +43,7 @@ def client():
             yield IceRESTClient("http://localhost:8181")
             break
         except Exception:
+            print(subprocess.check_output(shlex.split("docker ps")))
             time.sleep(0.5)
             timeout -= 0.5
             if timeout < 0:

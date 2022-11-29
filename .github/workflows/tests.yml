@@ -14,12 +14,9 @@ jobs:
         uses: mamba-org/provision-with-micromamba@main
         with:
           environment-file: ci/environment39.yaml
-      - name: Install
+      - name: Install and test
         shell: bash -l {0}
         run: |
           pip install -e .
           docker pull mdurant/ice:1
-      - name: Test with pytest
-        shell: bash -l {0}
-        run: |
-          pytest -v --cov
+          pytest -v --cov -s
