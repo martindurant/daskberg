@@ -28,7 +28,8 @@ class IcebergDataset:
         Parameters
         ----------
         url: str
-            Base directory, iceberg "location"
+            Base directory, iceberg "location"; or specific metadata JSON file
+            to read.
         original_url: str | None
             If the data originated elsewhere, the embedded absolute URLs will be
             wrong. Set this to that original location to replace with new locations
