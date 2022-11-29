@@ -34,6 +34,7 @@ def client():
     stop_docker(name)
     # dumps stuff in ./rest/ for now for ease of finding
     os.makedirs(f"{loc}/rest", exist_ok=True)
+    os.chmod(f"{loc}/rest", 0o777)
     cmd = f"docker run -d --name {name} -p 8181:8181 -v {loc}/rest:/tmp mdurant/ice:1"
     cid = subprocess.check_output(shlex.split(cmd)).strip().decode()
     timeout = 15
