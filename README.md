@@ -68,12 +68,13 @@ Out[22]:
 
 Some notes:
 - the data were created in a different location to where they are now found. Iceberg
- doesn't normally allow you to do this, but we can correct for ir with ORIGIN_DIR.
+ doesn't normally allow you to do this, but we can correct for it with ORIGIN_DIR.
 - We can introspect the schema and any partitioning without touching any data files
 - we create dask dataframes by default, and you can use these on a distributed clister
  if all the workers can access the data files
 - You can move to different snapshots. Here we went one step back in time. See how the
  schema changed.
+- Reading from any location supported by ``fsspec`` is allowed.
 
 (the data were created with pyspark and following a Dremio community
 [tutorial](https://www.dremio.com/subsurface/introduction-to-apache-iceberg-using-spark/))
