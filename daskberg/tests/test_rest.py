@@ -35,7 +35,7 @@ def client():
     # dumps stuff in ./rest/ for now for ease of finding
     os.makedirs(f"{loc}/rest", exist_ok=True)
     cmd = f"docker run -d --name {name} -p 8181:8181 -v {loc}/rest:/tmp mdurant/ice:1"
-    subprocess.check_output(shlex.split(cmd))
+    cid = subprocess.check_output(shlex.split(cmd)).strip().decode()
     timeout = 15
     while True:
         try:
@@ -48,6 +48,7 @@ def client():
             timeout -= 0.5
             if timeout < 0:
                 raise
+    print(subprocess.check_output(shlex.split(f"docker logs {cid}")))
     stop_docker(name)
     shutil.rmtree(f"{loc}/rest")
 
