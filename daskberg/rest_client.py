@@ -2,10 +2,23 @@ import requests
 
 
 class IceRESTClient:
+    """
+    REST operations on an Iceberg service
+    """
     # https://github.com/apache/iceberg/blob/master/open-api/rest-catalog-open-api.yaml
-    def __init__(self, endpoint):
+    def __init__(self, endpoint, namespace=None):
+        """
+
+        Parameters
+        ----------
+        endpoint: str
+            HTTP URL of the service, including port and terminating before the "/v1"
+        namespace: str | None
+            Set the namespace to work in. The namespace attribute of the instance
+            can be set at any time
+        """
         self.endpoint = endpoint
-        self.namespace = None
+        self.namespace = namespace
         self.session = requests.Session()
 
     def url(self, path):
@@ -102,6 +115,14 @@ api = [None]
 
 
 def _get_def(path):
+    """Find definition of REST API entity
+
+    >>> _get_def('#/components/schemas/AddSnapshotUpdate')
+    {'allOf': [{'$ref': '#/components/schemas/BaseUpdate'},
+      {'type': 'object',
+       'required': ['snapshot'],
+       'properties': {'snapshot': {'$ref': '#/components/schemas/Snapshot'}}}]}
+    """
     if api[0] is None:
         api[0] = _get_api()
     parts = path.strip("#").strip("/").split("/")

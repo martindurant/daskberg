@@ -74,18 +74,18 @@ Some notes:
  if all the workers can access the data files
 - You can move to different snapshots. Here we went one step back in time. See how the
  schema changed.
-- Reading from any location supported by ``fsspec`` is allowed.
 
-(the data were created with pyspark and following a Dremio community
+(the data were created with pyspark SQL and following a Dremio community
 [tutorial](https://www.dremio.com/subsurface/introduction-to-apache-iceberg-using-spark/))
 
 ### What works
 
 - most data types
 - filtering (meaning you don't load data files or even manifest files)
-- derived partitions
+- derived partitions in filters
 - some basic operations with the REST iceberg service, particularly to find the
  current metadata file's location for some table
+- Reading from any storage backend supported by ``fsspec``
 
 Testing was mostly done with fastparquet, which newly supports schema evolution.
 
@@ -94,11 +94,5 @@ Testing was mostly done with fastparquet, which newly supports schema evolution.
 - any writing at all
 - we do not make use of much of the available metadata, as dask's API was not built
  thinking you might already have such information.
-
-#### Instructions for running the local REST server
-
-- clone https://github.com/tabular-io/iceberg-rest-image
-- build with ``gradle``
-- run ``docker build -t ice .`` in that directory
-
-I also posted images at dockerhub: `mdurant/ice`.
+- only handles parquet
+- the REST client does no auth (!) and most routes are not implemented.

@@ -228,6 +228,16 @@ class IcebergDataset:
             Sub-select columns to load
         kwargs: dict
             Passed to current backend engine
+
+        Examples
+        --------
+        >>> ice.read()  # all columns, all row-groups
+        >>> ice.read(filters=[("x", ">", 0), ("y", "in", ["apple", "pear"])])  # AND filter
+        >>> ice.read(columns=["x", "y", "z"])
+
+        Returns
+        -------
+        dask.dataframe.DataFrame
         """
         if self.manifest_list is None:
             self.open_snapshot()
