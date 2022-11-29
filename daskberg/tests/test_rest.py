@@ -47,8 +47,8 @@ def client():
             time.sleep(0.5)
             timeout -= 0.5
             if timeout < 0:
+                print("LOG:", subprocess.check_output(shlex.split(f"docker logs {cid}")))
                 raise
-    print("LOG:", subprocess.check_output(shlex.split(f"docker logs {cid}")))
     stop_docker(name)
     shutil.rmtree(f"{loc}/rest")
 
