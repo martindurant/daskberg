@@ -34,7 +34,6 @@ def client():
     stop_docker(name)
     # dumps stuff in ./rest/ for now for ease of finding
     os.makedirs(f"{loc}/rest", exist_ok=True)
-    os.chmod(f"{loc}/rest", 0o777)
     cmd = f"docker run -d --name {name} -p 8181:8181 -v {loc}/rest:/tmp mdurant/ice:1"
     cid = subprocess.check_output(shlex.split(cmd)).strip().decode()
     timeout = 15
@@ -44,11 +43,9 @@ def client():
             yield IceRESTClient("http://localhost:8181")
             break
         except Exception:
-            print(subprocess.check_output(shlex.split("docker ps")))
             time.sleep(0.5)
             timeout -= 0.5
             if timeout < 0:
-                print("LOG:", subprocess.check_output(shlex.split(f"docker logs {cid}")))
                 raise
     stop_docker(name)
     shutil.rmtree(f"{loc}/rest")
