@@ -20,7 +20,7 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: gradle
-        uses: gradle/gradle-build-actions
+        uses: gradle/gradle-build-actions@v2
 
       - name: build dockerfile
         shell: bash -l {0}
@@ -30,7 +30,7 @@ jobs:
           gradle build
           docker build -t ice .
           cd ..
-          
+
       - name: Install
         shell: bash -l {0}
         run: |
